@@ -1,13 +1,8 @@
 import React, { Component } from "react";
-
 import "../../style";
-
 import NewTaskForm from "../NewTaskForm/NewTaskForm";
-
 import TaskList from "../TaskList/TaskList";
-
 import Footer from "../Footer/Footer";
-
 import { nanoid } from "nanoid";
 
 export default class App extends Component {
@@ -30,17 +25,22 @@ export default class App extends Component {
     });
   };
 
-  onAdded = (e, nameTask,  timer = [0, '00']) => {
-    const copy = this.state.arr.slice();
-    copy.push({
-      nameTask,
-      done: false,
-      id: nanoid(5),
-      newTime: new Date(),
-      timer: timer,
-    });
+  onAdded = (nameTask, min, sec) => {
+    let copy = [
+      ...this.state.arr,
+      {
+        nameTask,
+        min:  min || 0,
+        sec:  sec || 0,
+        done: false,
+        id: nanoid(5),
+        newTime: new Date(),
+      },
+    ];
+
+ 
+ 
     this.setState(() => {
-      e.preventDefault();
       return {
         arr: copy,
       };

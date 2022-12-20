@@ -1,9 +1,6 @@
 import React, { Component } from "react";
-
-// import Timer from "../Timer/Timer";
-
+import Timer from "../Timer/Timer";
 import { formatDistanceToNow } from "date-fns";
-
 import PropTypes from "prop-types";
 
 export default class Task extends Component {
@@ -34,7 +31,6 @@ export default class Task extends Component {
   };
 
   handleInputChange(text) {
-    
     this.setState(() => {
       return {
         ...this.state,
@@ -46,7 +42,7 @@ export default class Task extends Component {
   inputEditFocus(e) {
     this.setState(() => {
       if (e.key === "Enter") {
-        if (this.state.value.trim() === '') return
+        if (this.state.value.trim() === "") return;
         e.preventDefault();
         return { ...this.state, isEdit: !this.state.isEdit };
       }
@@ -54,7 +50,6 @@ export default class Task extends Component {
   }
 
   render() {
-
     const createTime = formatDistanceToNow(this.props.data.newTime, {
       includeSeconds: true,
     });
@@ -69,11 +64,11 @@ export default class Task extends Component {
       display: "block",
       height: "100%",
     };
-
-    const res =  this.state.value.length > 0 ? this.state.value : !this.state.value 
+    const inputText =
+      this.state.value.length > 0 ? this.state.value : !this.state.value;
 
     return (
-      <li className={this.props.data.done ? "completed" : "toggle"}>
+      <div>
         <input
           id="checkboxId"
           className="toggle"
@@ -100,8 +95,8 @@ export default class Task extends Component {
           )}
           {!this.state.isEdit && (
             <>
-              {/* <Timer /> */}
-              <span className="description">{res}</span>
+              <span className={this.props.data.done ? 'throughText' : ''}   > {inputText} </span>
+              <Timer data={this.props.data} />
               <span className="created">created {createTime} ago</span>
             </>
           )}
@@ -118,7 +113,7 @@ export default class Task extends Component {
             ></button>
           </>
         )}
-      </li>
+      </div>
     );
   }
 }
