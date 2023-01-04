@@ -1,39 +1,39 @@
+import { el } from "date-fns/locale";
 import React, { Component } from "react";
 
 import TasksFilter from "../TasksFilter/TasksFilter";
 
-export default class Footer extends Component {
-  render() {
-    const { onClearCompleted, taskFilter, activeButton, data } = this.props;
-    const actuallyTasks = data;
-    let newArr = [];
-    if (activeButton === "completed") {
-      actuallyTasks.filter((el) => {
-        if (el.done) {
-          newArr.push(el);
-        }
-      });
-    } else if (activeButton === "active") {
-      actuallyTasks.filter((el) => {
-        if (!el.done) {
-          newArr.push(el);
-        }
-      });
-    } else if (activeButton === "all") {
-      actuallyTasks.filter((el) => {
-        newArr.push(el);
-      });
-    }
+const Footer = ({ onClearCompleted, taskFilter = ['all', 'completed', 'active'], data }) => {
+ 
+  // const newArr = data.filter((el) => {
+  //   if (activeButton === "completed" && el.done) {
+  //     return el;
+  //   }
+  //   if (activeButton === "active" && !el.done) {
+  //     return el;
+  //   }
+  //   if (activeButton === "all") {
+  //     return el;
+  //   }
+  // });
 
-    let countTasks = newArr.length;
-    return (
-      <footer className="footer">
-        <span className="todo-count">{countTasks} items left</span>
-        <TasksFilter data={this.props.data} taskFilter={taskFilter} activeButton={this.props.activeButton} />
-        <button className="clear-completed" onClick={() => onClearCompleted()}>
-          Clear completed
-        </button>
-      </footer>
-    );
-  }
-}
+  // let countTasks = data.length;
+  // console.log(countTasks);
+
+  return (
+    <footer className="footer">
+      <span className="todo-count">{data.filter((task) => task.done).length} items left</span>
+      <TasksFilter
+        data={data}
+        taskFilter={taskFilter}
+        // filterBtn={filterBtn}
+        // activeButton={activeButton}
+      />
+      <button className="clear-completed" onClick={() => onClearCompleted()}>
+        Clear completed
+      </button>
+    </footer>
+  );
+};
+
+export default Footer;
