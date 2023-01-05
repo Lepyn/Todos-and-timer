@@ -1,21 +1,14 @@
-import React, { Component } from "react";
-// import PropTypes from "prop-types";
+import React from "react";
+import PropTypes from "prop-types";
 import Task from "./../Task/Task";
 
-  // static defaultProps = {
-  //   activeButton: "all",
-  // };
-
-  // static get propTypes() {
-  //   return {
-  //     activeButton: PropTypes.string,
-  //   };
-  // }
-
-
-const TaskList = ({ data, onDeleted, onCompleted, filterBtn }) => {
-  console.log(filterBtn);
- 
+const TaskList = ({
+  data,
+  onDeleted,
+  filterBtn,
+  onCountTimer,
+  completedItem,
+}) => {
   let taskFilterList = data;
   if (filterBtn === "active") {
     taskFilterList = data.filter((el) => !el.done);
@@ -32,14 +25,19 @@ const TaskList = ({ data, onDeleted, onCompleted, filterBtn }) => {
             <Task
               data={task}
               onDeleted={onDeleted}
-              onCompleted={onCompleted}
-              // newTime={this.timeAddTask}
+              completedItem={completedItem}
+              onCountTimer={() => onCountTimer(task.id)}
             />
           </li>
         );
       })}
     </ul>
   );
+};
+TaskList.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  filterBtn: PropTypes.string,
+  onDeleted: PropTypes.func.isRequired,
 };
 
 export default TaskList;

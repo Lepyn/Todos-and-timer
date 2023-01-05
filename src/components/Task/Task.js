@@ -1,31 +1,23 @@
-import React, { useState } from "react";
-import Timer from "../Timer/Timer";
+import React, { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import PropTypes from "prop-types";
 
-// static defaultProps = {
-//   id: Math.random(),
-//   done: false,
-// };
-
-// static get propTypes() {
-//   return {
-//     id: PropTypes.number,
-//     done: PropTypes.bool,
-//   };
-// }
-
-const Task = ({ completedItem, data, onDeleted }) => {
-  // state = {
-  // value: this.props.data.nameTask,
-  //   isEdit: false,
-  // };
-
+const Task = ({ onCountTimer, completedItem, data, onDeleted }) => {
   const [value, setValue] = useState(data.nameTask);
   const [isEdit, setIsEdit] = useState(false);
 
+  const [created, setCreated] = useState(
+    formatDistanceToNow(data.newTime, {
+      includeSeconds: true,
+    })
+  );
+
+  const [countTimer, setcountTimer] = useState(true);
+
+  let timer;
+
   const clickMarkerButton = () => {
-    setIsEdit(!isEdit);
+    setIsEdit(true);
   };
 
   const handleInputChange = (text) => {
@@ -36,13 +28,10 @@ const Task = ({ completedItem, data, onDeleted }) => {
     if (e.key === "Enter") {
       if (value.trim() === "") return;
       e.preventDefault();
-      setValue(data, {isEdit: !isEdit})
+      setValue(e.target.value);
+      setIsEdit(false);
     }
   };
-
-  const createTime = formatDistanceToNow(data.newTime, {
-    includeSeconds: true,
-  });
 
   const padding = {
     padding: 0,
@@ -54,9 +43,48 @@ const Task = ({ completedItem, data, onDeleted }) => {
     display: "block",
     height: "100%",
   };
-  console.log(value);
-  const inputText = value.length > 0 ? value : !value;
-  console.log(value, "value 2 ");
+
+  const timeSec = () => {
+    setCreated(
+      formatDistanceToNow(data.newTime, {
+        includeSeconds: true,
+      })
+    );
+  };
+
+  const startTimer = () => {
+    setcountTimer(true);
+  };
+
+  const stopTimer = () => {
+    setcountTimer(false);
+  };
+  useEffect(() => {
+    const time = setInterval(() => timeSec(), 1000);
+    return () => {
+      clearInterval(time);
+    };
+  }, []);
+
+  const checkedCompletedTimer = () => {
+    completedItem(data.id);
+    if (!data.done) stopTimer();
+    if (data.done) startTimer();
+  };
+
+  const min = Math.floor(data.timer / 60);
+  const sec = data.timer % 60;
+
+  useEffect(() => {
+    if (countTimer) {
+      timer = setInterval(() => onCountTimer(), 1000);
+    }
+    if (!countTimer) {
+      clearInterval(timer);
+    }
+    return () => clearInterval(timer);
+  }, [countTimer]);
+
   return (
     <div>
       <input
@@ -64,13 +92,12 @@ const Task = ({ completedItem, data, onDeleted }) => {
         className="toggle"
         type="checkbox"
         checked={data.done ? true : false}
-        onChange={() => completedItem(data.id)}
+        onChange={checkedCompletedTimer}
       />
       <label
         htmlFor="checkboxId"
         className="editing"
         style={isEdit ? padding : null}
-        //  style={isEdit ? setIsEdit(padding) : setIsEdit(null) }
       >
         {isEdit && (
           <>
@@ -86,9 +113,24 @@ const Task = ({ completedItem, data, onDeleted }) => {
         )}
         {!isEdit && (
           <>
-            <span className={data.done ? "throughText" : ""}>{inputText}</span>
-            <Timer data={data} />
-            <span className="created">created {createTime} ago</span>
+            <span className={data.done ? "throughText" : ""}>
+              {value.length > 0 ? value : ""}
+            </span>
+            <span className="description">
+              <button
+                type="button"
+                className="icon-play"
+                onClick={() => startTimer()}
+              />
+              <button
+                type="button"
+                className="icon-pause"
+                onClick={() => stopTimer()}
+              />
+              <span className="timer"> {`${min}:${sec}`} </span>
+            </span>
+
+            <span className="created">created {created} ago</span>
           </>
         )}
       </label>
@@ -107,118 +149,11 @@ const Task = ({ completedItem, data, onDeleted }) => {
     </div>
   );
 };
+
+Task.propTypes = {
+  id: PropTypes.number,
+  done: PropTypes.bool,
+  completedItem: PropTypes.func.isRequired,
+};
+
 export default Task;
-// export default class Task extends Component {
-//   state = {
-//     value: this.props.data.nameTask,
-//     isEdit: false,
-//   };
-
-//   static defaultProps = {
-//     id: Math.random(),
-//     done: false,
-//   };
-
-//   static get propTypes() {
-//     return {
-//       id: PropTypes.number,
-//       done: PropTypes.bool,
-//     };
-//   }
-
-//   clickMarkerButton = () => {
-//     this.setState(() => {
-//       return {
-//         ...this.state,
-//         isEdit: !this.state.isEdit,
-//       };
-//     });
-//   };
-
-//   handleInputChange(text) {
-//     this.setState(() => {
-//       return {
-//         ...this.state,
-//         value: text,
-//       };
-//     });
-//   }
-
-//   inputEditFocus(e) {
-//     this.setState(() => {
-//       if (e.key === "Enter") {
-//         if (this.state.value.trim() === "") return;
-//         e.preventDefault();
-//         return { ...this.state, isEdit: !this.state.isEdit };
-//       }
-//     });
-//   }
-
-//   render() {
-//     const createTime = formatDistanceToNow(this.props.data.newTime, {
-//       includeSeconds: true,
-//     });
-
-//     const padding = {
-//       padding: 0,
-//       marginLeft: 40,
-//       height: 60,
-//     };
-
-//     const displayblock = {
-//       display: "block",
-//       height: "100%",
-//     };
-//     const inputText =
-//       this.state.value.length > 0 ? this.state.value : !this.state.value;
-
-//     return (
-//       <div>
-//         <input
-//           id="checkboxId"
-//           className="toggle"
-//           type="checkbox"
-//           checked={this.props.data.done ? true : false}
-//           onChange={() => this.props.onCompleted(this.props.data.id)}
-//         />
-//         <label
-//           htmlFor="checkboxId"
-//           className="editing"
-//           style={this.state.isEdit ? padding : null}
-//         >
-//           {this.state.isEdit && (
-//             <>
-//               <input
-//                 type="text"
-//                 className="edit"
-//                 style={displayblock}
-//                 value={this.state.value}
-//                 onChange={(e) => this.handleInputChange(e.target.value)}
-//                 onKeyUp={(e) => this.inputEditFocus(e)}
-//               />
-//             </>
-//           )}
-//           {!this.state.isEdit && (
-//             <>
-//               <span className={this.props.data.done ? 'throughText' : ''}   > {inputText} </span>
-//               <Timer data={this.props.data} />
-//               <span className="created">created {createTime} ago</span>
-//             </>
-//           )}
-//         </label>
-//         {!this.state.isEdit && (
-//           <>
-//             <button
-//               className="icon icon-edit"
-//               onClick={() => this.clickMarkerButton()}
-//             ></button>
-//             <button
-//               className="icon icon-destroy"
-//               onClick={() => this.props.onDeleted(this.props.data.id)}
-//             ></button>
-//           </>
-//         )}
-//       </div>
-//     );
-//   }
-// }

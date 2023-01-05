@@ -1,99 +1,65 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-export default class NewTaskForm extends Component {
-  constructor() {
-    super();
-    this.state = {
-      value: "",
-      min: "",
-      sec: "",
-      isTask: false,
-    };
-    this.onSubmit = this.onSubmit.bind(this);
-  }
+const NewTaskForm = ({ onAdded }) => {
+  const [value, setValue] = useState("");
+  const [sec, setSec] = useState("");
+  const [min, setMin] = useState("");
 
-  static defaultProps = {
-    isTask: false,
+  const handleInputChange = (e) => {
+    setValue(e.target.value);
   };
 
-  static get propTypes() {
-    return {
-      isTask: PropTypes.bool,
-    };
-  }
+  const onMinChange = (e) => {
+    setMin(+e.target.value);
+  };
 
-  handleInputChange(e) {
-    this.setState(() => {
-      return {
-        ...this.state,
-        value: e.target.value,
-      };
-    });
-  }
+  const onSecChange = (e) => {
+    setSec(+e.target.value);
+  };
 
-  onMinChange(e) {
-    console.log(e);
-    this.setState(() => {
-      return {
-        ...this.state,
-        min: e.target.value,
-      };
-    });
-  }
-  onSecChange(e) {
-    this.setState(() => {
-      return {
-        ...this.state,
-        sec: e.target.value,
-      };
-    });
-  }
-
-  onSubmit(e) {
-    const { value, min, sec } = this.state;
+  const onSubmit = (e) => {
     e.preventDefault();
     if (value.trim() === "") return;
-    this.props.onAdded(value, min, sec);
-    this.setState(() => {
-      return {
-        value: "",
-        min: "",
-        sec: "",
-      };
-    });
-  }
+    onAdded(value, min, sec);
+    setValue("");
+    setSec("");
+    setMin("");
+  };
 
-  render() {
-    return (
-      <header>
-        <h1>Todos</h1>
-        <form onSubmit={this.onSubmit} className="new-todo-form">
-          <input
-            value={this.state.value}
-            className="new-todo"
-            placeholder="What needs to be done?"
-            onChange={(e) => this.handleInputChange(e)}
-          />
-          <input
-            type="number"
-            className="new-todo-form__timer new-todo"
-            placeholder="Min"
-            value={this.state.min}
-            onChange={(e) => this.onMinChange(e)}
-            min={0}
-          />
-          <input
-            type="number"
-            className="new-todo-form__timer new-todo"
-            placeholder="Sec"
-            value={this.state.sec}
-            onChange={(e) => this.onSecChange(e)}
-            sec={0}
-          />
-          <input type="submit" hidden></input>
-        </form>
-      </header>
-    );
-  }
-}
+  return (
+    <header>
+      <h1>Todos</h1>
+      <form onSubmit={onSubmit} className="new-todo-form">
+        <input
+          value={value}
+          className="new-todo"
+          placeholder="What needs to be done?"
+          onChange={handleInputChange}
+        />
+        <input
+          type="number"
+          className="new-todo-form__timer new-todo"
+          placeholder="Min"
+          value={min}
+          onChange={onMinChange}
+        />
+        <input
+          type="number"
+          className="new-todo-form__timer new-todo"
+          placeholder="Sec"
+          value={sec}
+          onChange={onSecChange}
+        />
+        <input type="submit" hidden></input>
+      </form>
+    </header>
+  );
+};
+
+NewTaskForm.propTypes = {
+  isTask: PropTypes.bool,
+  onAdded: PropTypes.func.isRequired,
+};
+
+export default NewTaskForm;

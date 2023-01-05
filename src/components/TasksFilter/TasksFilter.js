@@ -1,7 +1,6 @@
 import React from "react";
 
 const TasksFilter = ({ activeButton, taskFilter }) => {
-  // console.log(activeButton);
   return (
     <ul className="filters">
       <li className="lifirst">
